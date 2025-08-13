@@ -8,10 +8,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { ToDoCalendar } from '@/components/ToDoCalendar';
+import { lazy, Suspense, useEffect, useState, type MouseEvent } from 'react';
+const ToDoCalendar = lazy(() => import('@/components/ToDoCalendar/ToDoCalendar'));
 import { Separator } from '../ui/separator';
-import { ToDoTable } from '../ToDoTable';
-import { useState, useEffect } from 'react';
+const ToDoTable = lazy(() => import('../ToDoTable/ToDoTable'));
 import { addEvent, getUserEvents } from '@/utils/todoStorage';
 
 interface ToDoDialogProps {
@@ -21,13 +21,12 @@ interface ToDoDialogProps {
 }
 
 export function ToDoDialog({ open, setShowModal, author }: ToDoDialogProps) {
-	console.log('ToDoDialog rendered with author:', author);
 	const [eventText, setEventText] = useState('');
 	const [startDate, setStartDate] = useState<Date>(new Date());
 	const [events, setEvents] = useState([]);
 	const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
 
-	const handleSave = (e: React.MouseEvent) => {
+	const handleSave = (e: MouseEvent) => {
 		e.preventDefault();
 		if (!eventText.trim()) return toast.error('Digite um nome para o evento');
 		addEvent(author, eventText, startDate);
@@ -63,10 +62,12 @@ export function ToDoDialog({ open, setShowModal, author }: ToDoDialogProps) {
 							onChange={(e) => setEventText(e.target.value)}
 							maxLength={100}
 						/>
-						<ToDoCalendar
-							value={startDate}
-							onChange={setStartDate}
-						/>
+						<Suspense fallback={null}>
+							<ToDoCalendar
+								value={startDate}
+								onChange={setStartDate}
+							/>
+						</Suspense>
 						<Button onClick={handleSave}>Adicionar</Button>
 					</div>
 					<Separator />
@@ -90,12 +91,14 @@ export function ToDoDialog({ open, setShowModal, author }: ToDoDialogProps) {
 							Concluídos
 						</Button>
 					</div>
-					<ToDoTable
-						author={author}
-						events={events}
-						reload={loadEvents}
-						filter={filter}
-					/>
+					<Suspense fallback={null}>
+						<ToDoTable
+							author={author}
+							events={events}
+							reload={loadEvents}
+							filter={filter}
+						/>
+					</Suspense>
 					<Separator />
 					<DialogFooter>
 						<Button
