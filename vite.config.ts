@@ -18,4 +18,32 @@ export default defineConfig({
 			'@': path.resolve(__dirname, './src'),
 		},
 	},
+	esbuild: {
+		drop: ['console', 'debugger'],
+	},
+	build: {
+		sourcemap: false,
+		target: 'es2019',
+		cssCodeSplit: true,
+		reportCompressedSize: true,
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					vendor: ['react', 'react-dom'],
+					'react-day-picker': ['react-day-picker'],
+					icons: ['lucide-react'],
+					radix: [
+						'@radix-ui/react-alert-dialog',
+						'@radix-ui/react-dialog',
+						'@radix-ui/react-dropdown-menu',
+						'@radix-ui/react-label',
+						'@radix-ui/react-popover',
+						'@radix-ui/react-separator',
+						'@radix-ui/react-slot',
+					],
+					sonner: ['sonner'],
+				},
+			},
+		},
+	},
 });
